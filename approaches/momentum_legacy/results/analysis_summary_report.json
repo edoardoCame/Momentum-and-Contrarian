@@ -1,0 +1,20 @@
+{
+  "analysis_date": "2025-08-09 22:12:07",
+  "total_strategies": 13,
+  "best_strategy": {
+    "name": "Vol-Adj Momentum (20,2.0)",
+    "category": "Volatility-Adjusted",
+    "sharpe_ratio": 0.1899943098899374,
+    "total_return": 1.4127943485314844,
+    "max_drawdown": -0.3835979451894374
+  },
+  "category_rankings": {
+    "Blended": 0.0,
+    "Volatility-Adjusted": -0.0027785049270769233,
+    "Basic": -0.056582974972285,
+    "Percentile-Based": -0.18630525409747212,
+    "Multi-Timeframe": -0.3500882160158922
+  },
+  "positive_sharpe_strategies": 4,
+  "key_insight": "Simple beats complex"
+}

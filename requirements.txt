@@ -1,0 +1,49 @@
+# Unified Dependencies for Momentum & Contrarian Trading Strategies Framework
+# Compatible with all three approaches: momentum_legacy, vectorized_contrarian, advanced_contrarian
+
+# Core Data Science Libraries
+pandas>=1.3.0
+numpy>=1.21.0
+scipy>=1.7.0
+scikit-learn>=1.0.0
+
+# Financial Data and Analysis
+yfinance>=0.1.70
+matplotlib>=3.5.0
+seaborn>=0.11.0
+plotly>=5.0.0
+
+# Jupyter Environment
+jupyter>=1.0.0
+notebook>=6.4.0
+ipywidgets>=7.6.0
+
+# High-Performance Computing (Advanced Engine)
+numba>=0.56.0                    # JIT compilation for performance-critical code
+cvxpy>=1.2.0                     # Portfolio optimization
+
+# Optional: Enhanced Visualization
+bokeh>=2.4.0                     # Interactive plotting
+ipyvolume>=0.6.0                 # 3D visualization (optional)
+
+# Development and Testing  
+pytest>=6.2.0                   # Testing framework
+black>=21.0.0                   # Code formatting
+flake8>=4.0.0                   # Linting
+
+# Data Utilities
+openpyxl>=3.0.0                 # Excel file support
+xlrd>=2.0.0                     # Excel reading
+pyarrow>=5.0.0                  # Parquet file support (enhanced performance)
+fastparquet>=0.7.0              # Alternative parquet engine
+
+# Progress Bars and Utilities
+tqdm>=4.62.0                    # Progress bars for long-running operations
+joblib>=1.1.0                   # Parallel processing utilities
+
+# Optional: Advanced Features
+statsmodels>=0.13.0             # Statistical modeling (advanced analysis)
+arch>=5.0.0                     # GARCH models and volatility (advanced)
+
+# Minimum Python Version: 3.8+
+# Recommended Python Version: 3.9+
