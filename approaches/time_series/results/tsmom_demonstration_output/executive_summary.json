@@ -1,0 +1,21 @@
+{
+  "strategy_name": "TSMOM - Time Series Momentum",
+  "paper_reference": "Moskowitz, Ooi & Pedersen (2012)",
+  "execution_period": {
+    "start": "2001-09-28",
+    "end": "2025-08-29",
+    "total_months": 288
+  },
+  "key_performance": {
+    "cagr": 0.02527313038674972,
+    "annual_volatility": 0.14300698088868224,
+    "sharpe_ratio": 0.13167489153557704,
+    "max_drawdown": -0.54890512697684,
+    "calmar_ratio": 0.04604280256215583
+  },
+  "portfolio_characteristics": {
+    "target_volatility_per_contract": 0.4,
+    "average_active_positions": 24.993079584775085,
+    "average_turnover": 0.5438236031752464
+  }
+}
