@@ -18,7 +18,7 @@ class TSMOMSignalGenerator:
     Regole chiave del paper:
     - Lookback period: 12 mesi (k=12)
     - Holding period: 1 mese (h=1) 
-    - Skip ultimo mese: segnale basato su rendimenti da t-12 a t-1 (esclude mese corrente)
+    - Include ultimo mese: segnale basato su rendimenti da t-12 a t (include mese corrente)
     - Segnale: sign(cumulative excess return over 12m) → +1 long, -1 short
     - Ribilanciamento: mensile senza overlapping
     """
@@ -44,12 +44,12 @@ class TSMOMSignalGenerator:
     
     def calculate_cumulative_momentum(self, monthly_excess_returns: pd.DataFrame) -> pd.DataFrame:
         """
-        Calcola momentum cumulativo su 12 mesi seguendo MOP (2012).
+        Calcola momentum cumulativo su 12 mesi seguendo MOP (2012) - versione modificata.
         
         Formula chiave:
-        - Rendimento cumulativo = Π(1 + r_t) - 1 per t da (t-12) a (t-1)
-        - Implementazione vettorizzata: (1 + excess_returns).shift(1).rolling(12).apply(np.prod) - 1
-        - shift(1) assicura che usiamo solo informazioni fino a t-1
+        - Rendimento cumulativo = Π(1 + r_t) - 1 per t da (t-12) a t (include mese corrente)
+        - Implementazione vettorizzata: (1 + excess_returns).rolling(12).apply(np.prod) - 1
+        - MODIFICATO: Rimosso shift(1) per includere l'ultimo mese nel calcolo
         
         Args:
             monthly_excess_returns: DataFrame excess returns mensili
@@ -59,19 +59,18 @@ class TSMOMSignalGenerator:
         """
         self.logger.info(f"📊 Calcolo momentum cumulativo ({self.lookback_months}M lookback)...")
         
-        # CRITICO: shift(1) per evitare look-ahead bias
-        # Usiamo informazioni fino a t-1 per decisioni al tempo t
-        lagged_returns = monthly_excess_returns.shift(1)
+        # MODIFICATO: Rimosso shift(1) per includere l'ultimo mese nel calcolo
+        # Usiamo informazioni da t-12 a t (incluso) per decisioni al tempo t
         
         # Calcola rendimento cumulativo usando compounding
         # Formula: Π(1 + r_i) - 1 = rolling product di (1 + returns) - 1
         cumulative_momentum = (
-            (1 + lagged_returns)
+            (1 + monthly_excess_returns)
             .rolling(window=self.lookback_months, min_periods=self.lookback_months)
             .apply(np.prod, raw=True)
         ) - 1
         
-        # Rimuovi righe con tutti NaN (primi 12+1 mesi non avranno segnali)
+        # Rimuovi righe con tutti NaN (primi 12 mesi non avranno segnali)
         cumulative_momentum = cumulative_momentum.dropna(how='all')
         
         # Validation

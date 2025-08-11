@@ -25,13 +25,13 @@ warnings.filterwarnings('ignore')
 
 class TSMOMStrategy:
     """
-    Strategia TSMOM completa seguendo Moskowitz, Ooi & Pedersen (2012).
+    Strategia TSMOM completa seguendo Moskowitz, Ooi & Pedersen (2012) - versione modificata.
     
     Integra tutti i moduli per l'esecuzione end-to-end:
     1. Download dati (futures + T-Bill)
     2. Calcolo returns e excess returns
     3. Stima volatilità EWMA ex-ante
-    4. Generazione segnali momentum (12M, skip ultimo mese)
+    4. Generazione segnali momentum (12M, include ultimo mese)
     5. Costruzione portafoglio con volatility scaling (40% target)
     6. Analisi performance completa
     7. Validazione e diagnostiche

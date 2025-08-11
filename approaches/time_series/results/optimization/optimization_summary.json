@@ -1,20 +1,20 @@
 {
-  "timestamp": "2025-08-11T15:20:31.495325",
+  "timestamp": "2025-08-11T16:02:37.743381",
   "total_combinations_tested": 80,
   "successful_combinations": 80,
   "optimization_period": "2000-2025",
   "best_sharpe_ratio": {
     "parameters": {
       "lookback_months": 12,
-      "target_volatility": 0.4,
+      "target_volatility": 0.3,
       "ewma_com": 45
     },
     "performance": {
-      "cagr": 0.025511485993794825,
-      "sharpe_ratio": 0.24561393210687107,
-      "volatility": 0.1444707771260004,
-      "max_drawdown": -0.5495704463668066,
-      "win_rate": 0.5208333333333334
+      "cagr": 0.022099971881134994,
+      "sharpe_ratio": 0.25405920941558824,
+      "volatility": 0.10927625082409438,
+      "max_drawdown": -0.3635877783020635,
+      "win_rate": 0.5224913494809689
     }
   },
   "best_cagr": {
@@ -24,11 +24,11 @@
       "ewma_com": 45
     },
     "performance": {
-      "cagr": 0.030171204583825162,
-      "sharpe_ratio": 0.24372566209841243,
-      "volatility": 0.21653004416043656,
-      "max_drawdown": -0.7293599756162596,
-      "win_rate": 0.5208333333333334
+      "cagr": 0.03216222923167256,
+      "sharpe_ratio": 0.2523490523762709,
+      "volatility": 0.21838330614000068,
+      "max_drawdown": -0.6403836316468187,
+      "win_rate": 0.5224913494809689
     }
   }
 }
