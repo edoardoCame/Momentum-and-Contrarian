@@ -26,6 +26,12 @@ This comprehensive framework unifies three distinct approaches to quantitative t
    - Comprehensive risk management
    - Professional deployment ready
 
+4. **🟢 Seasonality Analysis** (`seasonality_analysis/`)
+   - Comprehensive seasonal pattern analysis for commodities
+   - 15+ years of historical data (2010-2025)
+   - Statistical significance testing
+   - Sector-based seasonal insights (Energy, Metals, Agriculture)
+
 ## 🏗️ Unified Architecture
 
 ```
@@ -44,6 +50,12 @@ momentum_contrarian_unified/
 │   ├── backtest/                      # Unified backtesting engine
 │   ├── portfolio/                     # Portfolio construction & optimization
 │   └── utils/                         # Common utilities
+│
+├── seasonality_analysis/              # Commodity seasonality research
+│   ├── modules/                       # Seasonality analysis engine
+│   ├── notebooks/                     # Interactive seasonal analysis
+│   ├── results/                       # Seasonal pattern visualizations
+│   └── data/                          # Processed seasonal data
 │
 ├── approaches/                        # Original implementations preserved
 │   ├── momentum_legacy/              # Complete MOMENTUM project
@@ -82,6 +94,12 @@ momentum_contrarian_unified/
 - ✅ **Weekly rebalancing** optimal for transaction cost balance
 - ✅ **Inverse volatility weighting** improves risk-adjusted returns
 
+### **Seasonality Analysis (Commodities)**
+- ✅ **Strong seasonal patterns** across all commodity sectors
+- ✅ **Statistical significance** in 15+ years of data
+- ✅ **Sector rotation insights** - Energy, Metals, Agriculture timing
+- ✅ **Calendar anomalies** - Month and day-of-week effects identified
+
 ## 🚀 Quick Start Guide
 
 ### **Option 1: Momentum Analysis (Commodities)**
@@ -103,7 +121,13 @@ cd approaches/advanced_contrarian/notebooks
 jupyter notebook portfolio_analysis.ipynb     # Professional analysis
 ```
 
-### **Option 4: Compare All Approaches**
+### **Option 4: Seasonality Analysis (Commodity Patterns)**
+```bash
+cd seasonality_analysis/notebooks
+jupyter notebook commodities_seasonality.ipynb     # Seasonal pattern analysis
+```
+
+### **Option 5: Compare All Approaches**
 ```bash
 python scripts/compare_approaches.py          # Coming soon
 ```
@@ -116,6 +140,7 @@ python scripts/compare_approaches.py          # Coming soon
 | Basic Momentum 5D | Commodities | +59.58% | 0.102 | -40.57% |
 | Risk Parity Contrarian | Forex | Variable | Variable | Variable |
 | Advanced Contrarian | Forex | Optimized | Optimized | Controlled |
+| **Seasonality Analysis** | **Commodities** | **Patterns** | **Statistical** | **Identified** |
 
 ## 🛠️ Installation & Dependencies
 
@@ -137,6 +162,7 @@ pip install cvxpy           # For optimization (portfolio construction)
 
 - **`README.md`** (this file) - Main overview and quick start
 - **`CLAUDE.md`** - AI development instructions and architecture details
+- **`seasonality_analysis/notebooks/commodities_seasonality.ipynb`** - Seasonal analysis documentation
 - **`approaches/momentum_legacy/README.md`** - Detailed momentum strategies documentation
 - **`approaches/advanced_contrarian/README.md`** - Professional contrarian framework docs
 - **`approaches/vectorized_contrarian/CLAUDE.md`** - Educational approach documentation
@@ -166,6 +192,7 @@ pip install cvxpy           # For optimization (portfolio construction)
 - Start with `approaches/vectorized_contrarian/forex/notebooks/fx_main_educational.ipynb`
 - Clear step-by-step implementation of contrarian strategies
 - Interactive analysis and visualization
+- Explore `seasonality_analysis/notebooks/commodities_seasonality.ipynb` for seasonal patterns
 
 ### **For Researchers**
 - Comprehensive backtesting frameworks in all approaches
@@ -234,8 +261,9 @@ This is a research framework combining three distinct approaches. Each approach 
 
 1. **New to Quantitative Finance?** → Start with `approaches/vectorized_contrarian/`
 2. **Interested in Momentum Strategies?** → Explore `approaches/momentum_legacy/`
-3. **Building Production Systems?** → Study `approaches/advanced_contrarian/`
-4. **Want to Compare Everything?** → Use the unified `data/` and future `src/` modules
+3. **Want to Understand Seasonality?** → Analyze with `seasonality_analysis/`
+4. **Building Production Systems?** → Study `approaches/advanced_contrarian/`
+5. **Want to Compare Everything?** → Use the unified `data/` and future `src/` modules
 
 ---
 
