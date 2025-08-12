@@ -274,6 +274,94 @@ for commodity, count in significant_patterns.items():
     print(f"{clean_name}: {count}/12 months significant")
 ```
 
+## 🎯 Seasonal Trading Strategies
+
+### **NEW: Automated Seasonal Trading Implementation**
+
+Building on the seasonal analysis, we now provide **four production-ready trading strategies** that exploit statistically-significant seasonal patterns with strong economic foundations:
+
+#### **📊 Available Strategies**
+
+1. **🔋 Energy Seasonal Strategy**
+   - **Heating Oil Winter**: Long Oct-Feb (heating demand), Short Mar-Sep
+   - **Natural Gas Shoulder**: Long Mar-Apr (inventory draw completion), Short Nov-Dec
+   - **Gasoline Driving Season**: Long Feb-May (refinery switchover + demand prep)
+   - **Crude Oil Summer**: Long May-Aug (peak driving season)
+
+2. **🌾 Agricultural Seasonal Strategy**
+   - **Corn Harvest Cycle**: Short Jun-Sep (harvest pressure), Long Nov-Jan (post-harvest)
+   - **Wheat Winter Planting**: Long Sep-Nov (winter wheat planting season)
+   - **Sugar Crush Season**: Long Sep-Nov (Brazilian harvest), Short Feb-Apr (off-season)
+
+3. **🥇 Metals Seasonal Strategy**
+   - **January Effect**: Long Dec-Jan (year-end positioning, tax-loss selling completion)
+   - **May Weakness**: Short Apr-May (documented spring weakness)
+   - **Industrial Cycles**: Long positions timed with Chinese manufacturing restarts
+
+4. **🔄 Sector Rotation Strategy**
+   - **Multi-sector approach** combining complementary seasonal patterns
+   - **Dynamic allocation** based on seasonal strength metrics
+   - **Q1 Focus**: Metals (January Effect), **Q2**: Energy transition, **Q4**: Agriculture
+
+#### **🚀 Quick Start - Trading Strategies**
+
+**Option 1: Command Line Execution**
+```bash
+cd seasonality_analysis
+python run_seasonal_strategies.py --show-plots --export-excel
+```
+
+**Option 2: Interactive Analysis**
+```bash
+cd seasonality_analysis/notebooks
+jupyter notebook seasonal_strategies_demo.ipynb
+```
+
+**Option 3: Programmatic Usage**
+```python
+from seasonality_analysis.modules.seasonal_backtest_engine import SeasonalBacktestEngine
+
+# Run all seasonal strategies
+engine = SeasonalBacktestEngine(transaction_cost=0.0010)
+results = engine.run_strategy_comparison(start_date='2015-01-01')
+
+# Display performance
+performance = engine.generate_performance_report()
+print(performance)
+```
+
+#### **📈 Strategy Performance Highlights**
+
+Based on 10+ year backtests (2015-2025):
+- **Energy Seasonal**: Strong Sharpe ratios leveraging documented supply/demand cycles
+- **Agricultural Seasonal**: Consistent returns from harvest cycle fundamentals
+- **Metals Seasonal**: Benefits from industrial calendar effects and tax-loss selling
+- **Sector Rotation**: Diversified approach capturing multiple seasonal themes
+
+#### **🔬 Economic Foundations**
+
+All strategies are built on **documented economic phenomena**:
+- ✅ **Energy**: Heating oil winter demand, natural gas storage cycles, gasoline driving season
+- ✅ **Agriculture**: Corn/wheat harvest pressure, sugar processing seasons, weather premiums
+- ✅ **Metals**: January portfolio rebalancing, May weakness, Chinese New Year effects
+- ✅ **Statistical Validation**: Only patterns with p < 0.10 significance included
+
+#### **⚙️ Key Features**
+
+- **🛡️ Bias Prevention**: All signals use T-1 calendar data (no lookahead)
+- **💰 Transaction Costs**: Realistic 10bp transaction cost modeling
+- **📊 Risk Management**: Seasonal volatility-based position sizing
+- **📈 Performance Attribution**: Monthly and commodity-level analysis
+- **🔬 Statistical Testing**: Significance testing vs benchmark and zero returns
+- **📁 Comprehensive Output**: Excel exports, visualizations, detailed metrics
+
+#### **🎓 Educational Value**
+
+- **Clear Implementation**: Well-documented strategy classes with economic rationale
+- **Modular Design**: Easy to modify, extend, or combine strategies
+- **Statistical Rigor**: Proper significance testing and bias prevention
+- **Real-World Application**: Transaction costs, position sizing, risk management
+
 ---
 
-**⚡ This seasonality analysis framework provides institutional-grade seasonal pattern analysis for commodity futures markets with comprehensive statistical validation and actionable trading insights.**
+**⚡ This seasonality framework provides both institutional-grade seasonal pattern analysis AND production-ready trading strategies for commodity futures markets with comprehensive statistical validation and strong economic foundations.**
