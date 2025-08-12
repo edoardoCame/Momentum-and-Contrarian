@@ -187,9 +187,10 @@ def create_daily_equity_curves(commodity_data: Dict[str, pd.DataFrame],
     """
     daily_results = {}
     
-    # Get the date range for daily data (intersection of all commodities)
+    # Get the date range for daily data (union of all commodities, like monthly data)
+    # Use the same approach as monthly data - start from earliest available date
     date_ranges = [data.index for data in commodity_data.values()]
-    common_start = max(dr.min() for dr in date_ranges)
+    common_start = min(dr.min() for dr in date_ranges)  # Changed from max to min
     common_end = min(dr.max() for dr in date_ranges)
     
     print(f"Daily equity curves date range: {common_start.date()} to {common_end.date()}")
@@ -209,15 +210,33 @@ def create_daily_equity_curves(commodity_data: Dict[str, pd.DataFrame],
         # Filter to common date range
         daily_prices = daily_prices.loc[common_start:common_end]
         
+        # Handle negative prices before calculating returns
+        # Replace negative prices with a small positive value to avoid calculation issues
+        daily_prices_clean = daily_prices.copy()
+        negative_mask = daily_prices_clean < 0
+        if negative_mask.any().any():  # Check if any negative prices exist
+            print(f"  ⚠️  Found {negative_mask.sum().sum()} negative price days - applying price floor of $0.01")
+            daily_prices_clean[negative_mask] = 0.01  # Set minimum price to 1 cent
+        
         # Calculate daily returns
-        daily_returns = daily_prices.pct_change(fill_method=None)
+        daily_returns = daily_prices_clean.pct_change(fill_method=None)
+        
+        # Cap extreme returns to reasonable values (helps with numerical stability)
+        # This prevents single day extreme moves from dominating the entire strategy
+        return_cap = 2.0  # Cap daily returns at +/-200%
+        daily_returns = daily_returns.clip(lower=-return_cap, upper=return_cap)
         
         # Forward-fill monthly positions to daily frequency
         # Resample monthly positions to daily (forward fill within each month)
         monthly_positions_reindexed = monthly_positions.reindex(daily_returns.index, method='ffill')
         
+        # Handle missing data: set positions to 0 where commodity data is missing
+        # This ensures we don't get NaN strategy returns when some commodities are missing
+        combined_data = monthly_positions_reindexed.shift(1) * daily_returns
+        combined_data = combined_data.fillna(0)  # Fill NaN with 0 (no contribution when data is missing)
+        
         # Calculate daily strategy returns
-        daily_strategy_returns = (monthly_positions_reindexed.shift(1) * daily_returns).sum(axis=1)
+        daily_strategy_returns = combined_data.sum(axis=1)
         
         # Calculate cumulative returns
         daily_cumulative = (1 + daily_strategy_returns.fillna(0)).cumprod()
