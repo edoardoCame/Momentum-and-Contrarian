@@ -1,9 +1,21 @@
 import pandas as pd
 import yfinance as yf
 import os
-from .strategy_contrarian import strategy, rebalance_risk_parity
 import warnings
 warnings.filterwarnings('ignore')
+
+# Handle imports for both notebook and script execution
+try:
+    from .strategy_contrarian import strategy, rebalance_risk_parity
+except (ImportError, ValueError):
+    try:
+        from strategy_contrarian import strategy, rebalance_risk_parity
+    except ImportError:
+        import sys
+        import os
+        current_dir = os.path.dirname(__file__)
+        sys.path.append(current_dir)
+        from strategy_contrarian import strategy, rebalance_risk_parity
 
 def download_and_save_commodities_data(tickers, start_date='2010-01-01', end_date='2025-12-31', data_dir='../commodities/data/raw'):
     """
