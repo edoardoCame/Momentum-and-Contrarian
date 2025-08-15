@@ -1,0 +1,12 @@
+==================================================
+TSMOM STRATEGIES - PERFORMANCE SUMMARY
+==================================================
+Best Strategy: TSMOM_12M
+Best Sharpe Ratio: -0.80
+Average Sharpe Ratio: -1.29
+1M Lookback Sharpe: -2.19
+3M Lookback Sharpe: -1.23
+6M Lookback Sharpe: -0.95
+12M Lookback Sharpe: -0.80
+Avg TC Impact: 5.84% annually
+==================================================
