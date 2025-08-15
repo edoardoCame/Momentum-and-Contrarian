@@ -272,6 +272,11 @@ Each approach maintains its own dependency graph:
 - **Memory Management**: Monitor memory usage with large datasets
 - **Parallel Processing**: Configure based on available CPU cores
 
+## Memories and Guidelines
+
+### Development Approach
+- **usa, ovunque possibile, un approccio vettorizzato** - Always use a vectorized approach wherever possible
+
 ---
 
 This unified repository provides comprehensive quantitative trading research capabilities while preserving the distinct advantages of each approach. Choose the appropriate approach based on your specific needs and development context.
