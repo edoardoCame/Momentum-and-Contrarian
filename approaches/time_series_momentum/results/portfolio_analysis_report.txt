@@ -1,0 +1,47 @@
+======================================================================
+EQUAL WEIGHT PORTFOLIO ANALYSIS REPORT
+======================================================================
+Analysis Date: 2025-08-16 11:21:32
+Data Period: 2000-01-07 to 2025-08-15
+Total Observations: 1337 weeks
+
+PORTFOLIO COMPOSITION:
+- Number of Strategies: 8
+- TSMOM Strategies: 4 (TSMOM_1W, TSMOM_2W, TSMOM_4W, TSMOM_8W)
+- Contrarian Strategies: 4 (CONTRARIAN_1W, CONTRARIAN_2W, CONTRARIAN_4W, CONTRARIAN_8W)
+- Weighting Scheme: Equal Weight (12.5% each)
+- Rebalancing: Weekly (every Friday)
+
+PORTFOLIO PERFORMANCE:
+- Total Return: +0.00%
+- Annual Return: +0.00%
+- Annual Volatility: 0.00%
+- Sharpe Ratio: nan
+- Maximum Drawdown: 0.00%
+- VaR 95%: 0.00%
+- VaR 99%: 0.00%
+
+DIVERSIFICATION BENEFITS:
+- Diversification Ratio: inf
+- Volatility Reduction: 100.0%
+- Average Strategy Correlation: -0.143
+- TSMOM-Contrarian Correlation: -1.000
+
+BENCHMARK COMPARISON:
+- Best Individual Strategy: CONTRARIAN_2W (Sharpe: 0.263)
+- Portfolio vs Best Individual: +nan Sharpe difference
+- Average Individual Sharpe: 0.000
+- Portfolio vs Average: +nan improvement
+
+STRATEGY TYPE ANALYSIS:
+- TSMOM Average Sharpe: -0.205
+- Contrarian Average Sharpe: 0.205
+- TSMOM Annual Contribution: -0.43%
+- Contrarian Annual Contribution: +0.43%
+
+KEY FINDINGS:
+❌ Portfolio underperforms best individual strategy
+✅ Significant volatility reduction through diversification
+⚠️ High correlation between momentum and contrarian strategies
+
+======================================================================

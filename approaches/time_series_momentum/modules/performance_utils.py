@@ -24,28 +24,83 @@ class SimplePerformanceAnalyzer:
     
     def plot_equity_curves(self, results: Dict, save_path: Optional[str] = None) -> None:
         """
-        Plot equity curves for all strategies with proper date formatting.
+        Plot equity curves for all strategies with distinct colors for TSMOM vs Contrarian.
         
         Args:
             results: Dictionary with backtest results
             save_path: Optional path to save the plot
         """
-        # All strategies are monthly now
         if not results:
             print("No results to plot")
             return
             
         fig, ax = plt.subplots(1, 1, figsize=self.figsize)
         
-        # Plot all monthly strategies
+        # Define distinct color palettes for each strategy type
+        tsmom_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']  # Blues/oranges for TSMOM
+        contrarian_colors = ['#9467bd', '#8c564b', '#e377c2', '#7f7f7f']  # Purples/browns for Contrarian
+        
+        tsmom_count = 0
+        contrarian_count = 0
+        
+        # Plot strategies with distinct colors
         for strategy_name, strategy_results in results.items():
             equity = self._ensure_series_format(strategy_results['equity'])
-            ax.plot(equity.index, equity.values, label=strategy_name, linewidth=2)
+            
+            if strategy_name.startswith('TSMOM'):
+                color = tsmom_colors[tsmom_count % len(tsmom_colors)]
+                linestyle = '-'
+                linewidth = 2.5
+                tsmom_count += 1
+            else:  # Contrarian
+                color = contrarian_colors[contrarian_count % len(contrarian_colors)]
+                linestyle = '--'
+                linewidth = 2.0
+                contrarian_count += 1
+            
+            ax.plot(equity.index, equity.values, 
+                   label=strategy_name, 
+                   color=color,
+                   linestyle=linestyle,
+                   linewidth=linewidth)
         
-        ax.set_title('Monthly Contrarian Strategies - Net Equity Curves', fontsize=14, fontweight='bold')
+        ax.set_title('Weekly TSMOM vs Contrarian Strategies - Net Equity Curves', fontsize=14, fontweight='bold')
         ax.set_xlabel('Date', fontsize=12)
         ax.set_ylabel('Cumulative Return', fontsize=12)
-        ax.legend(fontsize=10)
+        
+        # Create custom legend to separate strategy types
+        tsmom_strategies = [s for s in results.keys() if s.startswith('TSMOM')]
+        contrarian_strategies = [s for s in results.keys() if s.startswith('CONTRARIAN')]
+        
+        # Add legend with clear separation
+        if tsmom_strategies and contrarian_strategies:
+            # First add all TSMOM lines
+            tsmom_lines = [plt.Line2D([0], [0], color=tsmom_colors[i % len(tsmom_colors)], 
+                                     linewidth=2.5, linestyle='-') 
+                          for i, _ in enumerate(tsmom_strategies)]
+            # Then add all Contrarian lines  
+            contrarian_lines = [plt.Line2D([0], [0], color=contrarian_colors[i % len(contrarian_colors)], 
+                                          linewidth=2.0, linestyle='--') 
+                               for i, _ in enumerate(contrarian_strategies)]
+            
+            # Create legend with section headers
+            legend_elements = []
+            legend_labels = []
+            
+            # Add TSMOM section
+            for i, strategy in enumerate(tsmom_strategies):
+                legend_elements.append(tsmom_lines[i])
+                legend_labels.append(strategy)
+            
+            # Add Contrarian section
+            for i, strategy in enumerate(contrarian_strategies):
+                legend_elements.append(contrarian_lines[i])
+                legend_labels.append(strategy)
+            
+            ax.legend(legend_elements, legend_labels, fontsize=9, loc='best')
+        else:
+            ax.legend(fontsize=10)
+        
         ax.grid(True, alpha=0.3)
         self._format_dates(ax)
         
@@ -59,7 +114,7 @@ class SimplePerformanceAnalyzer:
     def plot_performance_summary(self, metrics: pd.DataFrame, 
                                save_path: Optional[str] = None) -> None:
         """
-        Create consolidated performance summary plots.
+        Create consolidated performance summary plots with distinct colors for TSMOM vs Contrarian.
         
         Args:
             metrics: DataFrame with performance metrics
@@ -68,13 +123,20 @@ class SimplePerformanceAnalyzer:
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
         axes = axes.ravel()
         
-        # Plot 1: Risk-Return scatter
+        # Plot 1: Risk-Return scatter with strategy type colors
         annual_return = metrics['Annual_Return'] * 100
         annual_vol = metrics['Annual_Vol'] * 100
         
+        # Color by strategy type
+        colors = []
+        for strategy in metrics.index:
+            if strategy.startswith('TSMOM'):
+                colors.append('#1f77b4')  # Blue for TSMOM
+            else:
+                colors.append('#9467bd')  # Purple for Contrarian
+        
         scatter = axes[0].scatter(annual_vol, annual_return, 
-                                c=metrics['Sharpe_Ratio'], 
-                                cmap='RdYlGn', s=100, alpha=0.8)
+                                c=colors, s=100, alpha=0.8)
         
         for i, strategy in enumerate(metrics.index):
             axes[0].annotate(strategy, (annual_vol.iloc[i], annual_return.iloc[i]), 
@@ -84,12 +146,23 @@ class SimplePerformanceAnalyzer:
         axes[0].set_ylabel('Annual Return (%)')
         axes[0].set_title('Risk-Return Profile', fontsize=12, fontweight='bold')
         axes[0].grid(True, alpha=0.3)
-        plt.colorbar(scatter, ax=axes[0], label='Sharpe Ratio')
         
-        # Plot 2: Sharpe ratio comparison
+        # Add custom legend for strategy types
+        from matplotlib.patches import Patch
+        legend_elements = [Patch(facecolor='#1f77b4', label='TSMOM'),
+                          Patch(facecolor='#9467bd', label='Contrarian')]
+        axes[0].legend(handles=legend_elements, loc='best')
+        
+        # Plot 2: Sharpe ratio comparison with strategy type colors
         sharpe_ratios = metrics['Sharpe_Ratio']
-        colors = ['green' if x > 0 else 'red' for x in sharpe_ratios]
-        bars = axes[1].bar(range(len(sharpe_ratios)), sharpe_ratios.values, color=colors, alpha=0.7)
+        bar_colors = []
+        for strategy in sharpe_ratios.index:
+            if strategy.startswith('TSMOM'):
+                bar_colors.append('#1f77b4' if sharpe_ratios[strategy] > 0 else '#ff4444')
+            else:
+                bar_colors.append('#9467bd' if sharpe_ratios[strategy] > 0 else '#cc44cc')
+        
+        bars = axes[1].bar(range(len(sharpe_ratios)), sharpe_ratios.values, color=bar_colors, alpha=0.7)
         axes[1].set_title('Sharpe Ratio Comparison', fontsize=12, fontweight='bold')
         axes[1].set_ylabel('Sharpe Ratio')
         axes[1].set_xticks(range(len(sharpe_ratios)))
@@ -97,19 +170,32 @@ class SimplePerformanceAnalyzer:
         axes[1].axhline(y=0, color='black', linestyle='--', alpha=0.5)
         axes[1].grid(True, alpha=0.3)
         
-        # Plot 3: Maximum drawdown
+        # Plot 3: Maximum drawdown with strategy type colors
         max_dd = metrics['Max_Drawdown'] * 100
-        axes[2].bar(range(len(max_dd)), max_dd.values, color='red', alpha=0.7)
+        dd_colors = []
+        for strategy in max_dd.index:
+            if strategy.startswith('TSMOM'):
+                dd_colors.append('#ff7f0e')  # Orange for TSMOM
+            else:
+                dd_colors.append('#8c564b')  # Brown for Contrarian
+        
+        axes[2].bar(range(len(max_dd)), max_dd.values, color=dd_colors, alpha=0.7)
         axes[2].set_title('Maximum Drawdown', fontsize=12, fontweight='bold')
         axes[2].set_ylabel('Max Drawdown (%)')
         axes[2].set_xticks(range(len(max_dd)))
         axes[2].set_xticklabels(max_dd.index, rotation=45, ha='right')
         axes[2].grid(True, alpha=0.3)
         
-        # Plot 4: Annual returns distribution
+        # Plot 4: Annual returns distribution with strategy type colors
         annual_returns = metrics['Annual_Return'] * 100
-        colors = ['green' if x > 0 else 'red' for x in annual_returns]
-        axes[3].bar(range(len(annual_returns)), annual_returns.values, color=colors, alpha=0.7)
+        return_colors = []
+        for strategy in annual_returns.index:
+            if strategy.startswith('TSMOM'):
+                return_colors.append('#2ca02c' if annual_returns[strategy] > 0 else '#d62728')
+            else:
+                return_colors.append('#e377c2' if annual_returns[strategy] > 0 else '#7f7f7f')
+        
+        axes[3].bar(range(len(annual_returns)), annual_returns.values, color=return_colors, alpha=0.7)
         axes[3].set_title('Annual Returns Distribution', fontsize=12, fontweight='bold')
         axes[3].set_ylabel('Annual Return (%)')
         axes[3].set_xticks(range(len(annual_returns)))
@@ -143,9 +229,28 @@ class SimplePerformanceAnalyzer:
             drawdown = (equity - running_max) / running_max
             drawdowns[strategy_name] = drawdown
         
-        # Plot 1: Drawdown time series
+        # Plot 1: Drawdown time series with distinct colors
+        tsmom_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']  
+        contrarian_colors = ['#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
+        
+        tsmom_count = 0
+        contrarian_count = 0
+        
         for strategy_name, drawdown in drawdowns.items():
-            axes[0].plot(drawdown.index, drawdown.values, label=strategy_name, alpha=0.8)
+            if strategy_name.startswith('TSMOM'):
+                color = tsmom_colors[tsmom_count % len(tsmom_colors)]
+                linestyle = '-'
+                tsmom_count += 1
+            else:
+                color = contrarian_colors[contrarian_count % len(contrarian_colors)]
+                linestyle = '--'
+                contrarian_count += 1
+                
+            axes[0].plot(drawdown.index, drawdown.values, 
+                        label=strategy_name, 
+                        color=color,
+                        linestyle=linestyle,
+                        alpha=0.8)
         
         # Use the last drawdown for fill_between (they should have similar indices)
         last_drawdown = list(drawdowns.values())[-1]

@@ -1,0 +1,41 @@
+======================================================================
+TILTED PORTFOLIO ANALYSIS REPORT (70% Contrarian + 30% TSMOM)
+======================================================================
+Analysis Date: 2025-08-16 11:49:31
+Data Period: 2000-01-07 to 2025-08-15
+Total Observations: 1337 weeks
+
+PORTFOLIO COMPOSITION:
+- Number of Strategies: 8
+- TSMOM Strategies: 4 @ 7.5% each (TSMOM_1W, TSMOM_2W, TSMOM_4W, TSMOM_8W)
+- Contrarian Strategies: 4 @ 17.5% each (CONTRARIAN_1W, CONTRARIAN_2W, CONTRARIAN_4W, CONTRARIAN_8W)
+- Weighting Scheme: 70% Contrarian + 30% TSMOM
+- Rebalancing: Weekly (every Friday)
+- Rationale: Performance-based tilting towards positive strategies
+
+PORTFOLIO PERFORMANCE:
+- Total Return: +8.88%
+- Annual Return: +0.34%
+- Annual Volatility: 1.39%
+- Sharpe Ratio: 0.246
+- Maximum Drawdown: -5.30%
+
+PERFORMANCE ATTRIBUTION:
+- Expected Return (70/30 mix): +0.34%
+- Actual Portfolio Return: +0.34%
+- Diversification Alpha: +0.00%
+- Contrarian Average Return: +0.85%
+- TSMOM Average Return: -0.85%
+
+BENCHMARK COMPARISON:
+- Best Individual Strategy: CONTRARIAN_2W (Sharpe: 0.263)
+- Portfolio vs Best Individual: -0.017 Sharpe difference
+- Average Individual Sharpe: 0.000
+- Portfolio vs Average: +0.246 improvement
+
+KEY FINDINGS:
+❌ Tilted portfolio underperforms best individual strategy
+❌ Negative diversification alpha - simple mix would be better
+✅ Tilted portfolio improves on pure contrarian approach
+
+======================================================================

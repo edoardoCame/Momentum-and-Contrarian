@@ -6,25 +6,25 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-class SimpleContrarianBacktest:
+class WeeklyBacktestEngine:
     """
-    Simplified backtesting engine for Contrarian strategies.
+    Unified backtesting engine for weekly TSMOM and Contrarian strategies.
     
     Clean, vectorized backtesting with proper pandas Series output and 
-    unified interface for all frequencies.
+    weekly rebalancing frequency.
     """
     
     def __init__(self):
         pass
     
     def run_backtest(self, signals_dict: Dict[str, pd.DataFrame], 
-                     monthly_returns: pd.DataFrame) -> Dict:
+                     weekly_returns: pd.DataFrame) -> Dict:
         """
-        Run backtests for all monthly strategies.
+        Run backtests for all weekly strategies (both TSMOM and Contrarian).
         
         Args:
             signals_dict: Dictionary of strategy signals
-            monthly_returns: DataFrame with monthly returns
+            weekly_returns: DataFrame with weekly returns
             
         Returns:
             Dictionary with all backtest results
@@ -33,8 +33,8 @@ class SimpleContrarianBacktest:
         all_results = {}
         
         for strategy_name, signals in signals_dict.items():
-            # Run individual strategy backtest with monthly returns
-            results = self._calculate_strategy_returns(signals, monthly_returns, strategy_name)
+            # Run individual strategy backtest with weekly returns
+            results = self._calculate_strategy_returns(signals, weekly_returns, strategy_name)
             all_results[strategy_name] = results
             
         return all_results
@@ -87,9 +87,9 @@ class SimpleContrarianBacktest:
         metrics = {}
         
         for strategy_name, strategy_results in results.items():
-            # Get returns (all monthly frequency)
+            # Get returns (all weekly frequency)
             strategy_returns = strategy_results['returns']
-            freq_mult = 12  # Monthly frequency
+            freq_mult = 52  # Weekly frequency
             
             # Calculate performance metrics
             strategy_metrics = self._single_strategy_metrics(strategy_returns, freq_mult)
@@ -131,7 +131,7 @@ class SimpleContrarianBacktest:
         """Quick Sharpe ratio calculation for logging."""
         if len(returns) == 0 or returns.std() == 0:
             return np.nan
-        freq_mult = 12  # Monthly frequency
+        freq_mult = 52  # Weekly frequency
         return returns.mean() / returns.std() * np.sqrt(freq_mult)
     
     def save_results(self, results: Dict, output_dir: str = "../results") -> None:
@@ -145,12 +145,12 @@ class SimpleContrarianBacktest:
         output_path = Path(output_dir)
         output_path.mkdir(exist_ok=True)
         
-        # Save monthly results (all strategies are monthly now)
-        self._save_frequency_results(results, output_path, "monthly")
+        # Save weekly results (all strategies are weekly now)
+        self._save_frequency_results(results, output_path, "weekly")
         
         # Save combined metrics
         metrics_df = self.calculate_metrics(results)
-        metrics_df.to_parquet(output_path / "contrarian_performance_metrics.parquet")
+        metrics_df.to_parquet(output_path / "weekly_performance_metrics.parquet")
         
     
     def _save_frequency_results(self, results: Dict, output_path: Path, freq: str) -> None:
@@ -163,7 +163,7 @@ class SimpleContrarianBacktest:
             returns_data[strategy_name] = strategy_results['returns']
         
         # Save to files
-        pd.DataFrame(equity_curves).to_parquet(output_path / f"contrarian_{freq}_equity_curves.parquet")
-        pd.DataFrame(returns_data).to_parquet(output_path / f"contrarian_{freq}_returns.parquet")
+        pd.DataFrame(equity_curves).to_parquet(output_path / f"weekly_{freq}_equity_curves.parquet")
+        pd.DataFrame(returns_data).to_parquet(output_path / f"weekly_{freq}_returns.parquet")
 
 
