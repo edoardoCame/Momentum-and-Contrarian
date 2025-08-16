@@ -96,5 +96,59 @@ class SimpleForexLoader:
         """Get list of available forex pairs."""
         forex_files = list(self.data_dir.glob("*_X.parquet"))
         return [f.stem for f in forex_files]
+    
+    def analyze_data_availability(self) -> pd.DataFrame:
+        """
+        Analyze data availability for all forex pairs.
+        
+        Returns:
+            DataFrame with start_date, end_date, duration_years, and data_points for each pair
+        """
+        availability_data = []
+        forex_files = list(self.data_dir.glob("*_X.parquet"))
+        
+        for file_path in forex_files:
+            symbol = file_path.stem
+            try:
+                df = pd.read_parquet(file_path)
+                
+                # Clean index
+                if df.index.tz is not None:
+                    df.index = df.index.tz_convert(None)
+                df.index = pd.to_datetime(df.index)
+                
+                # Calculate availability metrics
+                start_date = df.index.min()
+                end_date = df.index.max()
+                duration_years = (end_date - start_date).days / 365.25
+                data_points = len(df)
+                
+                # Categorize pair type
+                if 'USD' in symbol:
+                    if symbol.startswith('USD'):
+                        pair_type = 'USD_Base'  # USD/XXX
+                    else:
+                        pair_type = 'USD_Quote'  # XXX/USD
+                else:
+                    pair_type = 'Cross'  # XXX/YYY
+                
+                availability_data.append({
+                    'pair': symbol,
+                    'start_date': start_date,
+                    'end_date': end_date,
+                    'duration_years': duration_years,
+                    'data_points': data_points,
+                    'pair_type': pair_type
+                })
+                
+            except Exception as e:
+                print(f"Error analyzing {symbol}: {e}")
+        
+        # Create DataFrame and sort by start date
+        availability_df = pd.DataFrame(availability_data)
+        if not availability_df.empty:
+            availability_df = availability_df.sort_values('start_date')
+        
+        return availability_df
 
 
