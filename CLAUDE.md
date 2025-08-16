@@ -277,6 +277,9 @@ Each approach maintains its own dependency graph:
 ### Development Approach
 - **usa, ovunque possibile, un approccio vettorizzato** - Always use a vectorized approach wherever possible
 
+### Execution Guidelines
+- **ricordati che devi usare python3 come comando per eseguire gli script** - Remember to use python3 as the command to execute scripts
+
 ---
 
 This unified repository provides comprehensive quantitative trading research capabilities while preserving the distinct advantages of each approach. Choose the appropriate approach based on your specific needs and development context.
