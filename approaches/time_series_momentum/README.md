@@ -1,18 +1,18 @@
-# Time Series Momentum (TSMOM) Strategy - Monthly Framework
+# Contrarian Strategy - Monthly Framework
 
-A simple, vectorized implementation of Time Series Momentum strategies for Forex markets with **monthly rebalancing only** for temporal consistency and coherent holding periods.
+A simple, vectorized implementation of Contrarian strategies for Forex markets with **monthly rebalancing only** for temporal consistency and coherent holding periods.
 
 ## Overview
 
-This implementation focuses on **monthly rebalancing consistency**, **simplicity** and **vectorization** while maintaining strict adherence to preventing lookahead bias. The strategy uses a **1-month holding period** aligned with monthly rebalancing for temporal coherence.
+This implementation focuses on **monthly rebalancing consistency**, **simplicity** and **vectorization** while maintaining strict adherence to preventing lookahead bias. The strategy uses a **1-month holding period** aligned with monthly rebalancing for temporal coherence and implements contrarian (mean reversion) logic.
 
 ## Strategy Logic
 
-### Core TSMOM Signal Generation
+### Core Contrarian Signal Generation
 ```python
-# Monthly momentum with strict lookahead prevention
-momentum = returns.rolling(window=lookback).sum().shift(1)  # T-1 data for T decisions
-signals = np.sign(momentum).fillna(0)  # +1 (Long), -1 (Short), 0 (No position)
+# Monthly contrarian with strict lookahead prevention
+past_performance = returns.rolling(window=lookback).sum().shift(1)  # T-1 data for T decisions
+signals = -np.sign(past_performance).fillna(0)  # +1 (Long losers), -1 (Short winners), 0 (No position)
 ```
 
 ### Entry and Exit Rules
@@ -20,7 +20,7 @@ signals = np.sign(momentum).fillna(0)  # +1 (Long), -1 (Short), 0 (No position)
 **Entry Rules (End of Month):**
 1. **Signal Date**: Last trading day of each month
 2. **Data Used**: Past N months of returns (T-N to T-1)
-3. **Position Decision**: Long if cumulative return > 0, Short if < 0
+3. **Position Decision**: Long if cumulative return < 0, Short if > 0 (contrarian)
 4. **Portfolio Weight**: Equal weight across all active positions
 5. **Execution**: Enter at month-end closing prices
 
@@ -41,24 +41,24 @@ signals = np.sign(momentum).fillna(0)  # +1 (Long), -1 (Short), 0 (No position)
 - ✅ **Strict Lookahead Prevention**: `.shift(1)` on all signals
 - ✅ **Equal Weight Rebalancing**: Monthly equal weight across active positions
 - ✅ **Vectorized Implementation**: Efficient pandas operations
-- ✅ **Transaction Cost Modeling**: Realistic 5bp per trade costs
+- ✅ **No Transaction Costs**: Pure strategy performance without friction
 
 ## Strategy Configurations
 
-### Monthly Momentum Strategies (All with 1-Month Holding Period)
-- **TSMOM_1M**: 1-month lookback momentum
-- **TSMOM_3M**: 3-month lookback momentum  
-- **TSMOM_6M**: 6-month lookback momentum
-- **TSMOM_12M**: 12-month lookback momentum
+### Monthly Contrarian Strategies (All with 1-Month Holding Period)
+- **CONTRARIAN_1M**: 1-month lookback contrarian
+- **CONTRARIAN_3M**: 3-month lookback contrarian  
+- **CONTRARIAN_6M**: 6-month lookback contrarian
+- **CONTRARIAN_12M**: 12-month lookback contrarian
 
 ### Detailed Timeline Example
 
 **January 31st (Signal Generation & Entry):**
 ```
-For TSMOM_3M:
+For CONTRARIAN_3M:
 - Lookback Data: October + November + December returns
-- Signal Calculation: sign(sum(Oct_ret + Nov_ret + Dec_ret)).shift(1)
-- Action: Enter positions for February holding period
+- Signal Calculation: -sign(sum(Oct_ret + Nov_ret + Dec_ret)).shift(1)
+- Action: Enter contrarian positions for February holding period
 - Portfolio: Equal weight across all Long/Short signals
 ```
 

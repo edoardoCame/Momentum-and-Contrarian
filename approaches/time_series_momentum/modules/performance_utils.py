@@ -39,10 +39,10 @@ class SimplePerformanceAnalyzer:
         
         # Plot all monthly strategies
         for strategy_name, strategy_results in results.items():
-            equity = self._ensure_series_format(strategy_results['net_equity'])
+            equity = self._ensure_series_format(strategy_results['equity'])
             ax.plot(equity.index, equity.values, label=strategy_name, linewidth=2)
         
-        ax.set_title('Monthly TSMOM Strategies - Net Equity Curves', fontsize=14, fontweight='bold')
+        ax.set_title('Monthly Contrarian Strategies - Net Equity Curves', fontsize=14, fontweight='bold')
         ax.set_xlabel('Date', fontsize=12)
         ax.set_ylabel('Cumulative Return', fontsize=12)
         ax.legend(fontsize=10)
@@ -69,15 +69,15 @@ class SimplePerformanceAnalyzer:
         axes = axes.ravel()
         
         # Plot 1: Risk-Return scatter
-        net_return = metrics['Net_Annual_Return'] * 100
-        net_vol = metrics['Net_Annual_Vol'] * 100
+        annual_return = metrics['Annual_Return'] * 100
+        annual_vol = metrics['Annual_Vol'] * 100
         
-        scatter = axes[0].scatter(net_vol, net_return, 
-                                c=metrics['Net_Sharpe_Ratio'], 
+        scatter = axes[0].scatter(annual_vol, annual_return, 
+                                c=metrics['Sharpe_Ratio'], 
                                 cmap='RdYlGn', s=100, alpha=0.8)
         
         for i, strategy in enumerate(metrics.index):
-            axes[0].annotate(strategy, (net_vol.iloc[i], net_return.iloc[i]), 
+            axes[0].annotate(strategy, (annual_vol.iloc[i], annual_return.iloc[i]), 
                            xytext=(5, 5), textcoords='offset points', fontsize=9)
         
         axes[0].set_xlabel('Volatility (%)')
@@ -87,7 +87,7 @@ class SimplePerformanceAnalyzer:
         plt.colorbar(scatter, ax=axes[0], label='Sharpe Ratio')
         
         # Plot 2: Sharpe ratio comparison
-        sharpe_ratios = metrics['Net_Sharpe_Ratio']
+        sharpe_ratios = metrics['Sharpe_Ratio']
         colors = ['green' if x > 0 else 'red' for x in sharpe_ratios]
         bars = axes[1].bar(range(len(sharpe_ratios)), sharpe_ratios.values, color=colors, alpha=0.7)
         axes[1].set_title('Sharpe Ratio Comparison', fontsize=12, fontweight='bold')
@@ -98,7 +98,7 @@ class SimplePerformanceAnalyzer:
         axes[1].grid(True, alpha=0.3)
         
         # Plot 3: Maximum drawdown
-        max_dd = metrics['Net_Max_Drawdown'] * 100
+        max_dd = metrics['Max_Drawdown'] * 100
         axes[2].bar(range(len(max_dd)), max_dd.values, color='red', alpha=0.7)
         axes[2].set_title('Maximum Drawdown', fontsize=12, fontweight='bold')
         axes[2].set_ylabel('Max Drawdown (%)')
@@ -106,13 +106,15 @@ class SimplePerformanceAnalyzer:
         axes[2].set_xticklabels(max_dd.index, rotation=45, ha='right')
         axes[2].grid(True, alpha=0.3)
         
-        # Plot 4: Transaction cost impact
-        tc_impact = (metrics['Gross_Annual_Return'] - metrics['Net_Annual_Return']) * 100
-        axes[3].bar(range(len(tc_impact)), tc_impact.values, color='orange', alpha=0.7)
-        axes[3].set_title('Transaction Cost Impact', fontsize=12, fontweight='bold')
-        axes[3].set_ylabel('Annual Impact (%)')
-        axes[3].set_xticks(range(len(tc_impact)))
-        axes[3].set_xticklabels(tc_impact.index, rotation=45, ha='right')
+        # Plot 4: Annual returns distribution
+        annual_returns = metrics['Annual_Return'] * 100
+        colors = ['green' if x > 0 else 'red' for x in annual_returns]
+        axes[3].bar(range(len(annual_returns)), annual_returns.values, color=colors, alpha=0.7)
+        axes[3].set_title('Annual Returns Distribution', fontsize=12, fontweight='bold')
+        axes[3].set_ylabel('Annual Return (%)')
+        axes[3].set_xticks(range(len(annual_returns)))
+        axes[3].set_xticklabels(annual_returns.index, rotation=45, ha='right')
+        axes[3].axhline(y=0, color='black', linestyle='--', alpha=0.5)
         axes[3].grid(True, alpha=0.3)
         
         plt.tight_layout()
@@ -136,7 +138,7 @@ class SimplePerformanceAnalyzer:
         # Calculate drawdowns for all strategies
         drawdowns = {}
         for strategy_name, strategy_results in results.items():
-            equity = self._ensure_series_format(strategy_results['net_equity'])
+            equity = self._ensure_series_format(strategy_results['equity'])
             running_max = equity.expanding().max()
             drawdown = (equity - running_max) / running_max
             drawdowns[strategy_name] = drawdown
@@ -204,28 +206,28 @@ class SimplePerformanceAnalyzer:
         """
         # Select key metrics
         display_cols = [
-            'Net_Total_Return', 'Net_Annual_Return', 'Net_Annual_Vol', 
-            'Net_Sharpe_Ratio', 'Net_Max_Drawdown', 'TC_Impact_Annual'
+            'Total_Return', 'Annual_Return', 'Annual_Vol', 
+            'Sharpe_Ratio', 'Max_Drawdown'
         ]
         
         formatted_df = metrics[display_cols].copy()
         
         # Format as percentages
-        pct_cols = ['Net_Total_Return', 'Net_Annual_Return', 'Net_Annual_Vol', 
-                   'Net_Max_Drawdown', 'TC_Impact_Annual']
+        pct_cols = ['Total_Return', 'Annual_Return', 'Annual_Vol', 
+                   'Max_Drawdown']
         
         for col in pct_cols:
             if col in formatted_df.columns:
                 formatted_df[col] = (formatted_df[col] * 100).round(2).astype(str) + '%'
         
         # Format Sharpe ratio
-        if 'Net_Sharpe_Ratio' in formatted_df.columns:
-            formatted_df['Net_Sharpe_Ratio'] = formatted_df['Net_Sharpe_Ratio'].round(2)
+        if 'Sharpe_Ratio' in formatted_df.columns:
+            formatted_df['Sharpe_Ratio'] = formatted_df['Sharpe_Ratio'].round(2)
         
         # Rename columns for display
         formatted_df.columns = [
             'Total Return', 'Annual Return', 'Volatility', 
-            'Sharpe Ratio', 'Max Drawdown', 'TC Impact'
+            'Sharpe Ratio', 'Max Drawdown'
         ]
         
         return formatted_df
@@ -243,18 +245,18 @@ class SimplePerformanceAnalyzer:
         """
         report = []
         report.append("=" * 50)
-        report.append("TSMOM STRATEGIES - PERFORMANCE SUMMARY")
+        report.append("CONTRARIAN STRATEGIES - PERFORMANCE SUMMARY")
         report.append("=" * 50)
         
         # Best performing strategy
-        best_strategy = metrics['Net_Sharpe_Ratio'].idxmax()
-        best_sharpe = metrics.loc[best_strategy, 'Net_Sharpe_Ratio']
+        best_strategy = metrics['Sharpe_Ratio'].idxmax()
+        best_sharpe = metrics.loc[best_strategy, 'Sharpe_Ratio']
         
         report.append(f"Best Strategy: {best_strategy}")
         report.append(f"Best Sharpe Ratio: {best_sharpe:.2f}")
         
         # Average strategy performance
-        avg_sharpe = metrics['Net_Sharpe_Ratio'].mean()
+        avg_sharpe = metrics['Sharpe_Ratio'].mean()
         report.append(f"Average Sharpe Ratio: {avg_sharpe:.2f}")
         
         # Lookback period analysis
@@ -264,21 +266,21 @@ class SimplePerformanceAnalyzer:
         lookback_12m = [s for s in metrics.index if '12M' in s]
         
         if lookback_1m:
-            sharpe_1m = metrics.loc[lookback_1m, 'Net_Sharpe_Ratio'].mean()
+            sharpe_1m = metrics.loc[lookback_1m, 'Sharpe_Ratio'].mean()
             report.append(f"1M Lookback Sharpe: {sharpe_1m:.2f}")
         if lookback_3m:
-            sharpe_3m = metrics.loc[lookback_3m, 'Net_Sharpe_Ratio'].mean()
+            sharpe_3m = metrics.loc[lookback_3m, 'Sharpe_Ratio'].mean()
             report.append(f"3M Lookback Sharpe: {sharpe_3m:.2f}")
         if lookback_6m:
-            sharpe_6m = metrics.loc[lookback_6m, 'Net_Sharpe_Ratio'].mean()
+            sharpe_6m = metrics.loc[lookback_6m, 'Sharpe_Ratio'].mean()
             report.append(f"6M Lookback Sharpe: {sharpe_6m:.2f}")
         if lookback_12m:
-            sharpe_12m = metrics.loc[lookback_12m, 'Net_Sharpe_Ratio'].mean()
+            sharpe_12m = metrics.loc[lookback_12m, 'Sharpe_Ratio'].mean()
             report.append(f"12M Lookback Sharpe: {sharpe_12m:.2f}")
         
-        # Transaction cost impact
-        avg_tc_impact = metrics['TC_Impact_Annual'].mean() * 100
-        report.append(f"Avg TC Impact: {avg_tc_impact:.2f}% annually")
+        # Performance summary (no transaction costs)
+        avg_return = metrics['Annual_Return'].mean() * 100
+        report.append(f"Avg Annual Return: {avg_return:.2f}%")
         
         report.append("=" * 50)
         

@@ -3,12 +3,12 @@ import numpy as np
 from typing import Dict
 
 
-class SimpleTSMOM:
+class SimpleContrarian:
     """
-    Simplified Time Series Momentum strategy implementation.
+    Simplified Contrarian strategy implementation.
     
-    Clean, vectorized momentum signals with unified interface for all frequencies.
-    Core logic: Long if past return > 0, Short if past return < 0.
+    Clean, vectorized contrarian signals with unified interface for all frequencies.
+    Core logic: Long if past return < 0, Short if past return > 0.
     """
     
     def __init__(self, lookbacks_monthly=[1, 3, 6, 12]):
@@ -18,7 +18,7 @@ class SimpleTSMOM:
         
     def generate_all_signals(self, monthly_returns: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         """
-        Generate TSMOM signals for monthly frequency only.
+        Generate Contrarian signals for monthly frequency only.
         
         Args:
             monthly_returns: DataFrame with monthly returns
@@ -30,29 +30,30 @@ class SimpleTSMOM:
         
         # Generate monthly signals only
         for lookback in self.lookbacks['monthly']:
-            strategy_name = f"TSMOM_{lookback}M"
-            signals = self._momentum_signal(monthly_returns, lookback)
+            strategy_name = f"CONTRARIAN_{lookback}M"
+            signals = self._contrarian_signal(monthly_returns, lookback)
             all_signals[strategy_name] = signals
             
         return all_signals
     
-    def _momentum_signal(self, returns: pd.DataFrame, lookback: int) -> pd.DataFrame:
+    def _contrarian_signal(self, returns: pd.DataFrame, lookback: int) -> pd.DataFrame:
         """
-        Simple, clean momentum signal calculation.
+        Simple, clean contrarian signal calculation.
         
         Args:
             returns: DataFrame with returns data
-            lookback: Number of periods for momentum calculation
+            lookback: Number of periods for contrarian calculation
             
         Returns:
             DataFrame with signals (-1, 0, +1)
         """
         # Calculate cumulative return over lookback period
         # Use shift(1) to prevent lookahead bias
-        momentum = returns.rolling(window=lookback).sum().shift(1)
+        past_performance = returns.rolling(window=lookback).sum().shift(1)
         
-        # Generate signals: +1 for positive momentum, -1 for negative, 0 for NaN
-        signals = np.sign(momentum).fillna(0)
+        # Generate contrarian signals: +1 for negative past performance (buy losers), 
+        # -1 for positive past performance (sell winners), 0 for NaN
+        signals = -np.sign(past_performance).fillna(0)
         
         return signals
     

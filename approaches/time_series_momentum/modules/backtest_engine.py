@@ -6,16 +6,16 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-class SimpleTSMOMBacktest:
+class SimpleContrarianBacktest:
     """
-    Simplified backtesting engine for TSMOM strategies.
+    Simplified backtesting engine for Contrarian strategies.
     
     Clean, vectorized backtesting with proper pandas Series output and 
     unified interface for all frequencies.
     """
     
-    def __init__(self, transaction_cost_bps: float = 5.0):
-        self.tc_bps = transaction_cost_bps
+    def __init__(self):
+        pass
     
     def run_backtest(self, signals_dict: Dict[str, pd.DataFrame], 
                      monthly_returns: pd.DataFrame) -> Dict:
@@ -52,56 +52,27 @@ class SimpleTSMOMBacktest:
         Returns:
             Dictionary with strategy results (all pandas Series)
         """
-        # Calculate gross returns
+        # Calculate portfolio returns
         asset_returns = signals * returns
         active_positions = np.abs(signals).sum(axis=1)
         
         # Equal weight portfolio returns
-        gross_returns = asset_returns.sum(axis=1) / np.maximum(active_positions, 1)
-        gross_returns = np.where(active_positions > 0, gross_returns, 0)
-        
-        # Apply transaction costs
-        net_returns = self._apply_transaction_costs(gross_returns, signals)
+        portfolio_returns = asset_returns.sum(axis=1) / np.maximum(active_positions, 1)
+        portfolio_returns = np.where(active_positions > 0, portfolio_returns, 0)
         
         # Calculate equity curves (ensure pandas Series output)
-        gross_equity = (1 + pd.Series(gross_returns, index=returns.index)).cumprod()
-        net_equity = (1 + pd.Series(net_returns, index=returns.index)).cumprod()
+        equity_curve = (1 + pd.Series(portfolio_returns, index=returns.index)).cumprod()
         
         # Package results with proper Series format
         results = {
             'strategy_name': strategy_name,
-            'gross_returns': pd.Series(gross_returns, index=returns.index),
-            'net_returns': pd.Series(net_returns, index=returns.index),
-            'gross_equity': gross_equity,
-            'net_equity': net_equity,
+            'returns': pd.Series(portfolio_returns, index=returns.index),
+            'equity': equity_curve,
             'active_positions': pd.Series(active_positions, index=returns.index)
         }
         
         return results
     
-    def _apply_transaction_costs(self, gross_returns: np.ndarray, 
-                               signals: pd.DataFrame) -> np.ndarray:
-        """
-        Simple transaction cost application.
-        
-        Args:
-            gross_returns: Array of gross returns
-            signals: DataFrame with position signals
-            
-        Returns:
-            Array of net returns after transaction costs
-        """
-        # Calculate turnover (position changes)
-        position_changes = signals.diff().fillna(signals)
-        total_turnover = np.abs(position_changes).sum(axis=1)
-        
-        # Transaction costs as percentage of turnover
-        transaction_costs = total_turnover * (self.tc_bps / 10000)
-        
-        # Apply costs
-        net_returns = gross_returns - transaction_costs
-        
-        return net_returns
     
     def calculate_metrics(self, results: Dict) -> pd.DataFrame:
         """
@@ -117,26 +88,13 @@ class SimpleTSMOMBacktest:
         
         for strategy_name, strategy_results in results.items():
             # Get returns (all monthly frequency)
-            gross_returns = strategy_results['gross_returns']
-            net_returns = strategy_results['net_returns']
+            strategy_returns = strategy_results['returns']
             freq_mult = 12  # Monthly frequency
             
-            # Calculate metrics for both gross and net
-            gross_metrics = self._single_strategy_metrics(gross_returns, freq_mult)
-            net_metrics = self._single_strategy_metrics(net_returns, freq_mult)
+            # Calculate performance metrics
+            strategy_metrics = self._single_strategy_metrics(strategy_returns, freq_mult)
             
-            # Combine with prefixes
-            combined_metrics = {}
-            for key, value in gross_metrics.items():
-                combined_metrics[f'Gross_{key}'] = value
-            for key, value in net_metrics.items():
-                combined_metrics[f'Net_{key}'] = value
-                
-            # Add transaction cost impact
-            combined_metrics['TC_Impact_Annual'] = (gross_metrics['Annual_Return'] - 
-                                                  net_metrics['Annual_Return'])
-            
-            metrics[strategy_name] = combined_metrics
+            metrics[strategy_name] = strategy_metrics
         
         return pd.DataFrame(metrics).T
     
@@ -192,7 +150,7 @@ class SimpleTSMOMBacktest:
         
         # Save combined metrics
         metrics_df = self.calculate_metrics(results)
-        metrics_df.to_parquet(output_path / "tsmom_performance_metrics.parquet")
+        metrics_df.to_parquet(output_path / "contrarian_performance_metrics.parquet")
         
     
     def _save_frequency_results(self, results: Dict, output_path: Path, freq: str) -> None:
@@ -201,13 +159,11 @@ class SimpleTSMOMBacktest:
         returns_data = {}
         
         for strategy_name, strategy_results in results.items():
-            equity_curves[f"{strategy_name}_Gross"] = strategy_results['gross_equity']
-            equity_curves[f"{strategy_name}_Net"] = strategy_results['net_equity']
-            returns_data[f"{strategy_name}_Gross"] = strategy_results['gross_returns']
-            returns_data[f"{strategy_name}_Net"] = strategy_results['net_returns']
+            equity_curves[strategy_name] = strategy_results['equity']
+            returns_data[strategy_name] = strategy_results['returns']
         
         # Save to files
-        pd.DataFrame(equity_curves).to_parquet(output_path / f"tsmom_{freq}_equity_curves.parquet")
-        pd.DataFrame(returns_data).to_parquet(output_path / f"tsmom_{freq}_returns.parquet")
+        pd.DataFrame(equity_curves).to_parquet(output_path / f"contrarian_{freq}_equity_curves.parquet")
+        pd.DataFrame(returns_data).to_parquet(output_path / f"contrarian_{freq}_returns.parquet")
 
 
